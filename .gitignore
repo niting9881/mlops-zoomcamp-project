@@ -1,0 +1,96 @@
+# Ignore Python bytecode and cache
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Ignore virtual environment
+venv/
+.env/
+.envrc
+
+# Ignore Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Ignore VS Code config
+.vscode/settings.json
+.vscode/launch.json
+
+# Ignore PyCharm config
+.idea/
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+
+# Ignore logs and temporary files
+*.log
+logs/
+tmp/
+temp/
+
+# MLOps specific
+# Model artifacts
+models/trained/*.pkl
+models/trained/*.joblib
+models/trained/*.h5
+models/trained/*.onnx
+
+# MLflow artifacts
+mlruns/
+mlflow_artifacts/
+
+# Data files (except samples)
+data/raw/*.csv
+data/processed/*.csv
+!data/raw/sample_*.csv
+!data/processed/sample_*.csv
+
+# Secrets and sensitive configuration
+config/secrets.json
+*.key
+*.pem
+*.crt
+
+# Environment-specific configs
+.env.local
+.env.production
+.env.staging
+
+# Great Expectations
+great_expectations/uncommitted/
+
+# OS files
+.DS_Store
+Thumbs.db
+*.log
+*.tmp
+*.swp
+
+# Ignore system files
+.DS_Store
+Thumbs.db
+
+# Ignore test coverage reports
+htmlcov/
+.coverage
+coverage.xml
+.cache
+
+# Ignore build/output directories
+build/
+dist/
+*.egg-info/
+
+# Ignore all .pkl files (models, preprocessors, etc.)
+*.pkl
+

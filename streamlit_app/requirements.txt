@@ -1,0 +1,8 @@
+# Streamlit App - Minimal Requirements
+# This file contains only the essential dependencies for the Streamlit application
+# For full development environment, use the main requirements.txt in project root
+
+streamlit==1.28.0       # Interactive web application framework
+requests>=2.31.0        # HTTP requests to API
+pandas>=1.5.0          # Data manipulation for display
+numpy>=1.24.0          # Numerical operations

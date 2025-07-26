@@ -1,0 +1,259 @@
+# Quality Gates Configuration Example
+
+quality_gates:
+  
+  # Data Quality Gates
+  - name: data_completeness
+    type: data_quality
+    enabled: true
+    severity: critical
+    threshold: 95.0
+    parameters:
+      max_missing_percent: 5.0
+      required_columns:
+        - price
+        - bedrooms
+        - bathrooms
+        - sqft_living
+        - sqft_lot
+    depends_on: []
+    description: "Validates data completeness and ensures required columns are present with minimal missing values"
+
+  - name: data_consistency
+    type: data_quality
+    enabled: true
+    severity: high
+    threshold: 98.0
+    parameters:
+      max_duplicate_percent: 2.0
+      consistency_rules:
+        price_min: 0
+        price_max: 10000000
+        bedrooms_min: 0
+        bedrooms_max: 20
+        bathrooms_min: 0
+        bathrooms_max: 20
+        sqft_living_min: 100
+        sqft_living_max: 50000
+    depends_on: ["data_completeness"]
+    description: "Validates data consistency including duplicates and value ranges"
+
+  - name: data_accuracy
+    type: data_quality
+    enabled: true
+    severity: medium
+    threshold: 90.0
+    parameters:
+      outlier_contamination: 0.1
+      max_outlier_percent: 15.0
+      distribution_p_threshold: 0.05
+    depends_on: ["data_completeness"]
+    description: "Validates data accuracy using outlier detection and statistical tests"
+
+  # Drift Detection Gates
+  - name: feature_drift_detection
+    type: drift_detection
+    enabled: true
+    severity: medium
+    threshold: 0.05
+    parameters:
+      statistical_threshold: 0.05
+      drift_methods:
+        - ks_test
+        - chi2_test
+      warning_threshold: 0.1
+    depends_on: ["data_completeness", "data_consistency"]
+    description: "Detects statistical drift in input features using KS and Chi-square tests"
+
+  - name: target_drift_detection
+    type: drift_detection
+    enabled: true
+    severity: high
+    threshold: 0.01
+    parameters:
+      statistical_threshold: 0.01
+      drift_methods:
+        - ks_test
+      target_column: price
+    depends_on: ["data_completeness"]
+    description: "Detects drift in target variable (house prices)"
+
+  # Model Performance Gates
+  - name: model_accuracy
+    type: model_performance
+    enabled: true
+    severity: critical
+    threshold: 0.85
+    parameters:
+      primary_metric: r2_score
+      metrics:
+        - r2_score
+        - mean_absolute_error
+        - mean_squared_error
+        - root_mean_squared_error
+      baseline_comparison: true
+      warning_metrics:
+        mean_absolute_error: 50000  # MAE threshold in dollars
+    depends_on: ["data_completeness", "feature_drift_detection"]
+    description: "Validates model performance against accuracy thresholds"
+
+  - name: model_performance_stability
+    type: model_performance
+    enabled: true
+    severity: medium
+    threshold: 0.8
+    parameters:
+      primary_metric: r2_score
+      performance_degradation_threshold: 0.05
+      consecutive_failures_threshold: 3
+    depends_on: ["model_accuracy"]
+    description: "Monitors model performance stability over time"
+
+  # Prediction Quality Gates
+  - name: prediction_confidence
+    type: prediction_quality
+    enabled: true
+    severity: medium
+    threshold: 0.7
+    parameters:
+      min_confidence: 0.7
+      confidence_distribution_check: true
+      low_confidence_threshold: 0.1  # % of predictions with low confidence
+    depends_on: ["model_accuracy"]
+    description: "Validates prediction confidence scores and distribution"
+
+  - name: prediction_distribution
+    type: prediction_quality
+    enabled: true
+    severity: low
+    threshold: 0.8
+    parameters:
+      distribution_similarity_threshold: 0.8
+      prediction_range_check: true
+      expected_min_price: 50000
+      expected_max_price: 5000000
+    depends_on: ["model_accuracy"]
+    description: "Validates prediction distribution and ranges"
+
+  # Data Volume Gates
+  - name: minimum_data_volume
+    type: data_volume
+    enabled: true
+    severity: critical
+    threshold: 1000
+    parameters:
+      min_rows: 1000
+      expected_volume_variance: 0.3  # Allow 30% variance from expected
+      volume_trend_check: true
+    depends_on: []
+    description: "Ensures minimum data volume requirements are met"
+
+  - name: data_freshness
+    type: data_volume
+    enabled: true
+    severity: high
+    threshold: 24
+    parameters:
+      max_age_hours: 24
+      freshness_check_column: "timestamp"  # Column to check for data age
+    depends_on: ["minimum_data_volume"]
+    description: "Validates data freshness and age"
+
+  # Feature Analysis Gates
+  - name: feature_importance_stability
+    type: feature_analysis
+    enabled: true
+    severity: medium
+    threshold: 0.8
+    parameters:
+      importance_correlation_threshold: 0.8
+      top_features_consistency: 10  # Check top 10 features
+      importance_change_threshold: 0.3  # Significant change in importance
+    depends_on: ["model_accuracy"]
+    description: "Validates stability of feature importance rankings"
+
+  - name: feature_distribution_validation
+    type: feature_analysis
+    enabled: true
+    severity: medium
+    threshold: 0.9
+    parameters:
+      distribution_similarity_threshold: 0.9
+      feature_correlation_check: true
+      max_correlation_change: 0.2
+    depends_on: ["data_consistency", "feature_drift_detection"]
+    description: "Validates feature distributions and correlations"
+
+  # Business Logic Gates
+  - name: business_rules_validation
+    type: business_rules
+    enabled: true
+    severity: high
+    threshold: 100.0
+    parameters:
+      rules:
+        - name: "reasonable_price_range"
+          condition: "price >= 50000 and price <= 10000000"
+          description: "House prices should be in reasonable range"
+        - name: "bedrooms_bathrooms_ratio"
+          condition: "bedrooms >= bathrooms * 0.5"
+          description: "Bedrooms should not be significantly less than bathrooms"
+        - name: "sqft_price_consistency"
+          condition: "(price / sqft_living) >= 50 and (price / sqft_living) <= 2000"
+          description: "Price per square foot should be reasonable"
+    depends_on: ["data_completeness", "data_consistency"]
+    description: "Validates business-specific rules and constraints"
+
+  # System Performance Gates
+  - name: prediction_latency
+    type: system_performance
+    enabled: true
+    severity: medium
+    threshold: 1000  # milliseconds
+    parameters:
+      max_prediction_time_ms: 1000
+      percentile_threshold: 95  # 95th percentile should be under threshold
+      batch_size_consideration: true
+    depends_on: []
+    description: "Validates prediction latency performance"
+
+  - name: system_resource_usage
+    type: system_performance
+    enabled: true
+    severity: low
+    threshold: 80.0
+    parameters:
+      max_cpu_percent: 80.0
+      max_memory_percent: 85.0
+      max_disk_percent: 90.0
+      check_during_inference: true
+    depends_on: []
+    description: "Monitors system resource usage during model operations"
+
+# Global Configuration
+global_settings:
+  # Execution settings
+  stop_on_critical_failure: true
+  parallel_execution: false
+  max_execution_time_minutes: 30
+  
+  # Alerting settings
+  alert_on_failure: true
+  alert_channels:
+    - email
+    - slack
+  
+  # Reporting settings
+  generate_reports: true
+  report_formats:
+    - json
+    - html
+  
+  # Storage settings
+  store_detailed_results: true
+  retention_days: 90
+  
+  # Retry settings
+  retry_failed_gates: true
+  max_retries: 2
+  retry_delay_minutes: 5

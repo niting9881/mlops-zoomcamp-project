@@ -1,0 +1,80 @@
+# =============================================================================
+# MLOps Pipeline - Development Requirements
+# =============================================================================
+# Additional dependencies for development, testing, and advanced features
+# Install with: pip install -r requirements-dev.txt
+
+# =============================================================================
+# 📈 ADVANCED MONITORING & OBSERVABILITY
+# =============================================================================
+elasticsearch>=8.9.0      # Log aggregation and full-text search
+redis>=4.6.0              # Caching and session storage
+celery>=5.3.0             # Distributed task queue for background jobs
+
+# =============================================================================
+# 🔧 DEVELOPMENT TOOLS
+# =============================================================================
+black>=23.0.0             # Code formatting
+flake8>=6.0.0             # Code linting and style checking
+isort>=5.12.0             # Import sorting
+mypy>=1.5.0               # Static type checking
+pre-commit>=3.0.0         # Git hooks for code quality
+
+# =============================================================================
+# 📚 DOCUMENTATION & NOTEBOOKS
+# =============================================================================
+jupyter>=1.0.0            # Jupyter notebook environment
+jupyterlab>=4.0.0         # JupyterLab interface
+notebook>=7.0.0           # Classic Jupyter notebook
+sphinx>=7.0.0             # Documentation generation
+mkdocs>=1.5.0             # Markdown documentation
+mkdocs-material>=9.0.0    # Material theme for MkDocs
+
+# =============================================================================
+# 🧪 ADVANCED TESTING
+# =============================================================================
+pytest-benchmark>=4.0.0   # Performance benchmarking
+pytest-xdist>=3.3.0       # Parallel test execution
+pytest-timeout>=2.1.0     # Test timeout handling
+locust>=2.16.0            # Load testing for APIs
+
+# =============================================================================
+# 🔍 PROFILING & DEBUGGING
+# =============================================================================
+memory-profiler>=0.61.0   # Memory usage profiling
+line-profiler>=4.0.0      # Line-by-line profiling
+py-spy>=0.3.0             # Sampling profiler (install separately)
+
+# =============================================================================
+# 🌐 ADDITIONAL WEB TOOLS
+# =============================================================================
+flask>=2.3.0              # Alternative web framework
+dash>=2.14.0              # Interactive web applications
+bokeh>=3.2.0              # Interactive visualization
+
+# =============================================================================
+# 📊 ADVANCED ML & DATA SCIENCE
+# =============================================================================
+tensorflow>=2.13.0        # Deep learning framework (optional)
+torch>=2.0.0              # PyTorch deep learning (optional)
+lightgbm>=4.0.0           # Gradient boosting framework
+catboost>=1.2.0           # Gradient boosting by Yandex
+hyperopt>=0.2.7           # Hyperparameter optimization
+optuna>=3.3.0             # Hyperparameter optimization framework
+
+# =============================================================================
+# 🔄 WORKFLOW & AUTOMATION
+# =============================================================================
+apache-airflow>=2.7.0     # Workflow orchestration (optional, complex setup)
+prefect>=2.10.0           # Modern workflow orchestration
+dvc>=3.0.0                # Data version control
+wandb>=0.15.0             # Experiment tracking (alternative to MLflow)
+
+# =============================================================================
+# ☁️ CLOUD & DEPLOYMENT
+# =============================================================================
+kubernetes>=27.0.0        # Kubernetes Python client
+docker>=6.0.0             # Docker Python SDK
+boto3>=1.28.0             # AWS SDK
+azure-storage-blob>=12.0.0  # Azure Blob Storage
+google-cloud-storage>=2.10.0  # Google Cloud Storage

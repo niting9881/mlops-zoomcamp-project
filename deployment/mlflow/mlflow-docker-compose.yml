@@ -1,0 +1,24 @@
+version: '3.8'
+services:
+  mlflow:
+    image: ghcr.io/mlflow/mlflow:latest
+    ports:
+      - "5555:5000"
+    volumes:
+      - mlflow_data:/mlflow
+    environment:
+      - MLFLOW_BACKEND_STORE_URI=sqlite:////mlflow/mlflow.db
+      - MLFLOW_DEFAULT_ARTIFACT_ROOT=/mlflow/artifacts
+    command: mlflow server --host 0.0.0.0 --backend-store-uri sqlite:////mlflow/mlflow.db --default-artifact-root /mlflow/artifacts --serve-artifacts
+    container_name: mlflow-tracking-server
+    restart: unless-stopped
+    networks:
+      - mlflow-network
+
+volumes:
+  mlflow_data:
+    driver: local
+
+networks:
+  mlflow-network:
+    driver: bridge

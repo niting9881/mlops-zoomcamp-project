@@ -1,0 +1,33 @@
+{
+  "database": {
+    "host": "localhost",
+    "port": 5432,
+    "database": "mlops_db",
+    "username": "postgres"
+  },
+  "mlflow": {
+    "tracking_uri": "http://localhost:5000",
+    "experiment_name": "house_price_prediction"
+  },
+  "model": {
+    "model_name": "house_price_model",
+    "model_version": "latest",
+    "model_path": "models/trained/house_price_model.pkl",
+    "preprocessor_path": "models/trained/preprocessor.pkl",
+    "max_model_age_days": 30
+  },
+  "api": {
+    "host": "0.0.0.0",
+    "port": 8000,
+    "debug": false,
+    "workers": 1,
+    "reload": false,
+    "cors_origins": ["*"]
+  },
+  "logging": {
+    "level": "INFO",
+    "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    "max_file_size_mb": 10,
+    "backup_count": 5
+  }
+}
