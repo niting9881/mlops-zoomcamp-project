@@ -1,6 +1,7 @@
 """
 Utility functions for the House Price Prediction API.
 """
+import inspect
 import logging
 import os
 import sys
@@ -52,11 +53,32 @@ logger = setup_logging(
 
 def log_execution_time(func):
     """Decorator to log function execution time."""
+
+    if inspect.iscoroutinefunction(func):
+        @wraps(func)
+        async def async_wrapper(*args, **kwargs):
+            start_time = datetime.now()
+            logger.info(f"Starting execution of {func.__name__}")
+
+            try:
+                result = await func(*args, **kwargs)
+                execution_time = (datetime.now() - start_time).total_seconds()
+                logger.info(f"Completed {func.__name__} in {execution_time:.2f} seconds")
+                return result
+            except Exception as e:
+                execution_time = (datetime.now() - start_time).total_seconds()
+                logger.error(
+                    f"Failed {func.__name__} after {execution_time:.2f} seconds: {str(e)}"
+                )
+                raise
+
+        return async_wrapper
+
     @wraps(func)
     def wrapper(*args, **kwargs):
         start_time = datetime.now()
         logger.info(f"Starting execution of {func.__name__}")
-        
+
         try:
             result = func(*args, **kwargs)
             execution_time = (datetime.now() - start_time).total_seconds()
@@ -64,13 +86,35 @@ def log_execution_time(func):
             return result
         except Exception as e:
             execution_time = (datetime.now() - start_time).total_seconds()
-            logger.error(f"Failed {func.__name__} after {execution_time:.2f} seconds: {str(e)}")
+            logger.error(
+                f"Failed {func.__name__} after {execution_time:.2f} seconds: {str(e)}"
+            )
             raise
-    
+
     return wrapper
 
 def handle_errors(func):
     """Decorator for comprehensive error handling."""
+    if inspect.iscoroutinefunction(func):
+        @wraps(func)
+        async def async_wrapper(*args, **kwargs):
+            try:
+                return await func(*args, **kwargs)
+            except Exception as e:
+                error_details = {
+                    "function": func.__name__,
+                    "error_type": type(e).__name__,
+                    "error_message": str(e),
+                    "traceback": traceback.format_exc(),
+                    "timestamp": datetime.now().isoformat()
+                }
+                logger.error(
+                    f"Error in {func.__name__}: {json.dumps(error_details, indent=2)}"
+                )
+                raise
+
+        return async_wrapper
+
     @wraps(func)
     def wrapper(*args, **kwargs):
         try:
@@ -85,7 +129,7 @@ def handle_errors(func):
             }
             logger.error(f"Error in {func.__name__}: {json.dumps(error_details, indent=2)}")
             raise
-    
+
     return wrapper
 
 def validate_model_files(model_path: str, preprocessor_path: str) -> bool:
